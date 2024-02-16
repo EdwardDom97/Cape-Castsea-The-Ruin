@@ -6,6 +6,7 @@
 
 #imports
 import pygame
+import sys
 from pygame.locals import *
 
 
@@ -25,8 +26,6 @@ menu_text_color = (150, 150, 150)  # Example text color for the menu
 
 #here I will declare a few separate game states for better management.
 pygame.display.set_caption('Cape Castsea: The Ruins')
-
-
 
 
 
@@ -66,6 +65,7 @@ player_speed = 1
 # Constants for game states
 MENU = 'MENU'
 GAME = 'GAME'
+OPTIONS = 'OPTIONS'
 
 
 
@@ -90,7 +90,10 @@ while running:
             running = False
     
 
+
     if current_state == MENU:
+       
+
         # Menu state logic
         pass
 
@@ -125,6 +128,18 @@ while running:
         pass
 
 
+    elif current_state == OPTIONS:
+        #options variables and logic
+        keys = pygame.key.get_pressed()
+
+        #checks for the escape key to return user to menu
+        if keys[K_ESCAPE]:
+            current_state = MENU
+        pass
+
+
+
+
 
 
 
@@ -134,33 +149,69 @@ while running:
 
 
 
+
+
     if current_state == MENU:
         screen.fill((25, 25, 50))  # Clear the screen
         # Draw menu elements
-        # Example: Draw a white rectangle as a placeholder button
-        button_rect = pygame.Rect(100, 100, 200, 50)  # (x, y, width, height)
-        pygame.draw.rect(screen, (255, 255, 255), button_rect)
 
+        #placing this text display first because this will head the main or menu screen of the game
         text_surface = font.render("Cape Castsea: The Ruins", True, menu_text_color)
-        text_rect = text_surface.get_rect(center=(screen_width // 4, 50))  # Center the text horizontally
+        text_rect = text_surface.get_rect(center=(screen_width // 4, 50))  # Center the text slightly towards the left side
         screen.blit(text_surface, text_rect)
+
+        #1st button
+        # Example: Draw a white rectangle as a placeholder button
+        #now renaming first button_rect to playbutton_rect in order to add additional buttons
+        playbutton_rect = pygame.Rect(100, 100, 200, 50)  # (x, y, width, height)
+        pygame.draw.rect(screen, (255, 255, 255), playbutton_rect)
 
         # Render "Play" text on the button
         play_text = font.render("Play", True, (0, 0, 0))
-        text_rect = play_text.get_rect(center=button_rect.center)
-        screen.blit(play_text, text_rect)
+        playtext_rect = play_text.get_rect(center=playbutton_rect.center)
+        screen.blit(play_text, playtext_rect)
+
+
+        #2nd button
+        #this rectangle will be a placeholder for my options button which will allow optimization like sound, fullscreen, ect.
+        optionsbutton_rect = pygame.Rect(100, 175, 200, 50)  # (x, y, width, height)
+        pygame.draw.rect(screen, (255, 255, 255), optionsbutton_rect)
+
+        # Render "options" text on the 2nd button
+        options_text = font.render("Options", True, (0, 0, 0))
+        optionstext_rect = options_text.get_rect(center=optionsbutton_rect.center)
+        screen.blit(options_text, optionstext_rect)
+
+
+        #3rd button
+        exitbutton_rect = pygame.Rect(100,250, 200, 50)
+        pygame.draw.rect(screen, (225,255,255), exitbutton_rect)
+
+        #rendering the "exit" text on the 3rd button
+        exit_text = font.render("Exit", True, (0, 0, 0))
+        exittext_rect = exit_text.get_rect(center=exitbutton_rect.center)
+        screen.blit(exit_text, exittext_rect)
+
+
+
+
 
          # Check for mouse clicks
         for event in pygame.event.get():
             if event.type == MOUSEBUTTONDOWN:
                 if event.button == 1:  # Left mouse button
                     # Check if mouse click is inside the button rectangle
-                    if button_rect.collidepoint(event.pos):
+                    if playbutton_rect.collidepoint(event.pos):
                         # Perform button action
                         current_state = GAME
 
+                    elif optionsbutton_rect.collidepoint(event.pos):
+                        current_state = OPTIONS
 
-
+                    elif exitbutton_rect.collidepoint(event.pos):
+                        running = False
+                        pygame.quit()
+                        sys.exit()
 
 
 
@@ -185,7 +236,21 @@ while running:
 
 
     # Draw game elements
-            
+    
+
+    elif current_state == OPTIONS:
+        screen.fill((25, 50, 65))  # Clear the screen
+        # Draw menu elements
+        # Example: Draw a white rectangle as a placeholder button
+        button_rect = pygame.Rect(100, 100, 200, 50)  # (x, y, width, height)
+        pygame.draw.rect(screen, (255, 255, 255), button_rect)
+
+        # Render "Fullscreen" text on the button
+        fullscreen_text = font.render("Fullscreen", True, (0, 0, 0))
+        text_rect = fullscreen_text.get_rect(center=button_rect.center)
+        screen.blit(fullscreen_text, text_rect)
+
+
     # Draw UI elements
 
 
