@@ -1,0 +1,9 @@
+game jam #3 'metroidvania 02/15/2024 7:43PM
+
+theme: nyt
+
+name: Cape Castsea: The Ruin
+
+setting: a small trading town at the edge of the sea. no more than 15-20 buildings perhaps less. magic is everywhere in this world, magical creatures. the story starts with the player making a character that washes up in a storm. The world is still early in technology and with magic the complexities and social concepts of society are more simple. There is a far off singular ruling kingdom, most of the world itself is still unknown. all surrounding lands attribute to the kingdom and there is more or less peace. there were wars previously but it was of monsters and men to establish said kingdom from tribes and nomads. the character can explore the small town obtaining a few basic items, interacting with a few npcs from a blacksmith to a general trader. There is a ruin outside of town further into the unknown land with the hints of power magic and wealth but none have returned victorious. 
+
+initial design: I think it should be very straight forward. simple menu, new game, load game, options, exit, when the player clicks new game it pulls up a super simple character window where I have designed 6 characters 3 male and 3 female. start of the game (story scenes might be added towards the end) the player is on a beach. it's top-down 2d movement is w,a,s,d keys. I want it to handle like an old pokemon game or zelda game as far as map scrolling and rendering goes. there will be a planned non randomzied town and ruin for the player to explore while keeping the focus of 'metroidvania'. the ruins will have a few enemies and traps, the player will obtain items as they explore. the gui is a simple overlay. I have not decided on combat, I think turn base if done right can be metroidvania style, if not will work on some swing/click/spacebar attack. 
