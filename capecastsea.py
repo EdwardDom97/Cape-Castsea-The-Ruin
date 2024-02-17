@@ -33,27 +33,39 @@ pygame.display.set_caption('Cape Castsea: The Ruins')
 
 
 #here I want to load in my environment and related varibles
-ground_tile = pygame.image.load('ground.png')
+ground_tile = pygame.image.load('graphics/ground.png')
 # Import the image for the tree border
-tree_border_tile = pygame.image.load('treeborder.png')
+tree_border_tile = pygame.image.load('graphics/treeborder.png')
+#import water tile
+sea_tile = pygame.image.load('graphics/sea_tile.png')
 
-
-# Define tile types (you can use numbers to represent different tile types)
+# Define tile types (using numbers to represent different tile types)
 GROUND = 0
+WATER = 1
+
+
+
+
 # Define the size of the tiles
 TILE_SIZE = 32
+
 
 #world size variables
 #world_width = 1500
 #world_height = 1200
 #creating a temporary varible to reflect a previous project.
-MAP_SIZE = 96
+MAP_SIZE = 64
 # Define the size of the playable area within the tree border
 
 
 
 # Create a 2D list to represent the tilemap
-tilemap = [[GROUND for _ in range(MAP_SIZE)] for _ in range(MAP_SIZE)]
+#tilemap = [[GROUND for _ in range(MAP_SIZE)] for _ in range(MAP_SIZE)] (old/current)
+# Modify the size of the playable area within the tree border
+PLAYABLE_AREA_WIDTH = MAP_SIZE // 4
+
+# Create a 2D list to represent the tilemap
+tilemap = [[WATER if col >= 3 * PLAYABLE_AREA_WIDTH else GROUND for col in range(MAP_SIZE)] for _ in range(MAP_SIZE)]
 
 
 #some sort of camera or scroll function so the player can pan around the map
@@ -79,9 +91,24 @@ OPTIONS = 'OPTIONS'
 
 
 #here I am going to load in my frist building image and assign it a position in the world.
-cape_house = pygame.image.load('capehouse.png')
+cape_house = pygame.image.load('graphics/capehouse.png')
 cape_house_position = (150,150)
 cape_house_rect = cape_house.get_rect(topleft=cape_house_position)
+
+#here I am loading in the second building
+cape_store = pygame.image.load('graphics/capestore.png')
+cape_store_position = (400, 380)
+cape_store_rect = cape_store.get_rect(topleft=cape_store_position)
+
+
+#this will be the third building
+
+
+
+
+#this could be a structure like a well
+
+
 
 
 # Create a Clock object
@@ -120,12 +147,23 @@ while running:
 
         if keys[K_a]:
             player_x -= player_speed
+            player_x = max(player_x, camera_x + player_width)
+
+
         if keys[K_d]:
             player_x += player_speed
+            player_x = min(player_x, camera_x + screen_width - player_width-32)
+
+
         if keys[K_w]:
             player_y -= player_speed
+            player_y = max(player_y, camera_y + player_height)
+
+
         if keys[K_s]:
             player_y += player_speed
+            player_y = min(player_y, camera_y + screen_height - player_height-32)
+
 
 
         # Update camera position based on player's position
@@ -243,6 +281,7 @@ while running:
         screen.fill((0, 0, 0))  # Clear the screen
         # Render game elements
           # Rendering the ground tiles
+        # Rendering the ground and water tiles
         for row in range(start_row, min(end_row + 1, MAP_SIZE)):
             for col in range(start_col, min(end_col, MAP_SIZE)):
                 tile_type = tilemap[row][col]
@@ -250,24 +289,65 @@ while running:
 
                 if tile_type == GROUND:
                     screen.blit(ground_tile, (tile_x, tile_y))
+                elif tile_type == WATER:
+                    screen.blit(sea_tile, (tile_x, tile_y))
 
                 # Check for border tiles
-                if row == 0 or row == MAP_SIZE - 1 or col == 0 or col == MAP_SIZE - 1:
+                if row == 0 or row == MAP_SIZE - 1 or col == 0 or col == MAP_SIZE + 1:
                     screen.blit(tree_border_tile, (tile_x, tile_y))
+
+
+                # Ensure player can only walk on ground tiles
+                player_tile_row = (player_y + player_height // 2) // TILE_SIZE
+                player_tile_col = (player_x + player_width // 2) // TILE_SIZE
+                if tilemap[player_tile_row][player_tile_col] == WATER:
+                    # If the player is standing on water, prevent movement
+                    # You can adjust this to handle player movement based on surrounding tiles if needed
+                    player_x, player_y = prev_player_x, prev_player_y  # Revert to previous position
+
+                # Update previous player position for collision detection
+                prev_player_x, prev_player_y = player_x, player_y
+
 
         #render the first capehouse
         screen.blit(cape_house, (cape_house_position[0] - camera_x, cape_house_position[1] - camera_y))
+
+
+        #rendering the capestore
+        screen.blit(cape_store,(cape_store_position[0] - camera_x, cape_store_position[1] - camera_y))
+ 
+
 
          # Render player
         pygame.draw.rect(screen, (255, 255, 255), (player_x - camera_x, player_y - camera_y, player_width, player_height))
 
 
+
+        #this is an extremely crude implementation of collision seeing as I will have to add it per building. will soon create a building class after i've loaded three or more structures.
+        # Check for collision between player and cape house      
+        if pygame.Rect(player_x, player_y, player_width, player_height).colliderect(cape_house_rect):
+            # If the player collides with the cape house, prevent player movement in that direction
+            if player_x < cape_house_rect.left:
+                player_x = cape_house_rect.left - player_width
+
+            elif player_x > cape_house_rect.right - player_width:
+                player_x = cape_house_rect.right
+
+            if player_y < cape_house_rect.top:
+                player_y = cape_house_rect.top - player_height
+
+            elif player_y > cape_house_rect.bottom - player_height:
+                player_y = cape_house_rect.bottom
+
     # Draw game elements
     
+
+
 
     elif current_state == OPTIONS:
         screen.fill((25, 50, 65))  # Clear the screen
         # Draw menu elements
+
         # Example: Draw a white rectangle as a placeholder button
         fullscreen_rect = pygame.Rect(100, 100, 200, 50)  # (x, y, width, height)
         pygame.draw.rect(screen, (255, 255, 255), fullscreen_rect)
