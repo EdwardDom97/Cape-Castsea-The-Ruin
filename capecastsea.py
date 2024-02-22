@@ -48,6 +48,9 @@ sea_tile = pygame.image.load('graphics/sea_tile.png')
 #importing an additional tile type for a beach
 sand_tile = pygame.image.load('graphics/sand_tile.png')
 
+
+
+
 # Define tile types (using numbers to represent different tile types)
 GROUND = 0
 WATER = 1
@@ -56,44 +59,34 @@ SAND = 2
 # Define the size of the tiles
 TILE_SIZE = 32
 
-#world size variables
-#world_width = 2000
-world_width = screen_width + TILE_SIZE * 10  # Assuming you want 10 additional columns for the beach
 
-world_height = 1300
-#creating a temporary varible to reflect a previous project.
-#MAP_SIZE = 64
-# Define the size of the playable area within the tree border
-# Calculate the number of tiles in the map based on the world size and tile size
-MAP_SIZE_X = world_width // TILE_SIZE
-MAP_SIZE_Y = world_height // TILE_SIZE
 
+#world size variables for the town area
+game_world_width = screen_width + TILE_SIZE * 10  # Assuming you want 10 additional columns for the beach
+game_world_height = 1300
+
+# Calculate the number of tiles in the map based on the game world size and tile size
+GAME_MAP_SIZE_X = game_world_width // TILE_SIZE
+GAME_MAP_SIZE_Y = game_world_height // TILE_SIZE
 
 # Create a 2D list to represent the tilemap
-#tilemap = [[GROUND for _ in range(MAP_SIZE)] for _ in range(MAP_SIZE)] (old/current)
-# Modify the size of the playable area within the tree border
-#PLAYABLE_AREA_WIDTH = MAP_SIZE // 4
+tilemap = [[GROUND for _ in range(GAME_MAP_SIZE_X)] for _ in range(GAME_MAP_SIZE_Y)]
 
 
-# Create a 2D list to represent the tilemap of the town area
+#I am going to copy the town area code named GAME MAP SIZE and call it PASSAGES WIDTH, HEIGHT, PASSAGES MAP SIX X and so on.
+passages_width = 1200
+passages_height = 2500
+
+# Calculate the number of tiles in the map based on the passage world size
+PASSAGES_MAP_SIZE_X = passages_width // TILE_SIZE
+PASSAGES_MAP_SIZE_Y = passages_height // TILE_SIZE
+
 # Create a 2D list to represent the tilemap
-tilemap = [[GROUND for _ in range(MAP_SIZE_X)] for _ in range(MAP_SIZE_Y)]
+passages_tilemap = [[GROUND for _ in range(PASSAGES_MAP_SIZE_X)] for _ in range(PASSAGES_MAP_SIZE_Y)]
 
 
 
-# Define the size of the passages area
-PASSAGES_WIDTH = 20  # Number of tiles in width
-PASSAGES_HEIGHT = 100  # Number of tiles in height
-
-
-# Create a 2D list to represent the tilemap for passages
-passages_tilemap = [[GROUND for _ in range(PASSAGES_WIDTH)] for _ in range(PASSAGES_HEIGHT)]
-
-
-
-#some sort of camera or scroll function so the player can pan around the map
-#camera variable and player variables
-# Camera variables
+# Camera variables #camera variable and player variables #some sort of camera or scroll function so the player can pan around the map
 camera_x = 0
 camera_y = 0
 
@@ -112,7 +105,6 @@ GAME = 'GAME'
 OPTIONS = 'OPTIONS'
 PASSAGES = 'PASSAGES'
 THERUINS = 'THERUINS'
-
 
 
 
@@ -137,6 +129,15 @@ cape_port_rect = cape_port.get_rect(topleft=cape_port_position)
 cape_passgate = pygame.image.load ('graphics/passgate.png')
 cape_passgate_position = (16,700)
 cape_passgate_rect = cape_passgate.get_rect(topleft=cape_passgate_position)
+
+
+#this is a structure for the PASSAGES AREA
+cape_entrygate = pygame.image.load('graphics/towngate.png')
+cape_entrygate_position =  (screen_width // 2, 10)
+cape_entrygate_rect = cape_entrygate.get_rect(midleft=cape_entrygate_position)
+
+
+
 
 
 
@@ -207,14 +208,14 @@ while running:
         camera_y = player_y - screen_height // 2
 
         # Clamp camera position to stay within the world boundaries
-        camera_x = max(0, min(camera_x, world_width - screen_width))
-        camera_y = max(0, min(camera_y, world_height - screen_height - 28 ))
+        camera_x = max(0, min(camera_x, game_world_width - screen_width))
+        camera_y = max(0, min(camera_y, game_world_height - screen_height - 28 ))
 
         # Render the visible portion of the tilemap based on camera position
         start_row = camera_y // TILE_SIZE
-        end_row = min(start_row + (screen_height // TILE_SIZE) + 1, MAP_SIZE_Y)
+        end_row = min(start_row + (screen_height // TILE_SIZE) + 1, GAME_MAP_SIZE_Y)
         start_col = camera_x // TILE_SIZE
-        end_col = min(start_col + (screen_width // TILE_SIZE) + 1, MAP_SIZE_X)
+        end_col = min(start_col + (screen_width // TILE_SIZE) + 1, GAME_MAP_SIZE_X)
 
             
 
@@ -224,10 +225,60 @@ while running:
 
 
 
+
+
     elif current_state == PASSAGES:
         
         #passages variables and logic
+        keys = pygame.key.get_pressed()
+
+        if keys[K_a]:
+            player_x -= player_speed
+            player_x = max(player_x, camera_x + player_width)
+
+
+        if keys[K_d]:
+            player_x += player_speed
+            player_x = min(player_x, camera_x + screen_width - player_width-32)
+
+
+        if keys[K_w]:
+            player_y -= player_speed
+            player_y = max(player_y, camera_y + player_height)
+
+
+        if keys[K_s]:
+            player_y += player_speed
+            player_y = min(player_y, camera_y + screen_height - player_height - 32)
+
+
+        # Listen for Esc key press to return to the menu state
+        if keys[K_ESCAPE]:
+            current_state = MENU
+
+
+        if keys[K_SPACE]:
+            interact = True
+
+            # Update camera position based on player's position
+        camera_x = player_x - screen_width // 2
+        camera_y = player_y - screen_height // 2
+
+        # Clamp camera position to stay within the world boundaries
+        camera_x = max(0, min(camera_x, passages_width - screen_width))
+        camera_y = max(0, min(camera_y, passages_height - screen_height - 28 ))
+
+        # Render the visible portion of the tilemap based on camera position
+        start_row = camera_y // TILE_SIZE
+        end_row = min(start_row + (screen_height // TILE_SIZE) + 1, PASSAGES_MAP_SIZE_Y)
+        start_col = camera_x // TILE_SIZE
+        end_col = min(start_col + (screen_width // TILE_SIZE) + 1, PASSAGES_MAP_SIZE_X)
+
+            
+
         pass
+
+        
 
 
 
@@ -354,19 +405,19 @@ while running:
                 # Rendering water tiles
               
                 # Check for border tiles
-                if row == 0 or row == MAP_SIZE_Y - 1 or col == 0 or col == MAP_SIZE_X - 1:
+                if row == 0 or row == GAME_MAP_SIZE_Y - 1 or col == 0 or col == GAME_MAP_SIZE_X - 1:
                     screen.blit(tree_border_tile, (tile_x, tile_y))
 
 
         #rendering a base of sand tiles at the right side of the screen
         for row in range(start_row, end_row):
-            for col in range(MAP_SIZE_X - 10, MAP_SIZE_X):  # Rendering the last 10 columns as water tiles
+            for col in range(GAME_MAP_SIZE_X - 10, GAME_MAP_SIZE_X):  # Rendering the last 10 columns as water tiles
                 tile_x, tile_y = col * TILE_SIZE - camera_x, row * TILE_SIZE - camera_y
                 screen.blit(sand_tile, (tile_x, tile_y))
 
         # Render the last few columns as water tiles
         for row in range(start_row, end_row):
-            for col in range(MAP_SIZE_X - 7, MAP_SIZE_X):  # Rendering the last 10 columns as water tiles
+            for col in range(GAME_MAP_SIZE_X - 7, GAME_MAP_SIZE_X):  # Rendering the last 10 columns as water tiles
                 tile_x, tile_y = col * TILE_SIZE - camera_x, row * TILE_SIZE - camera_y
                 screen.blit(sea_tile, (tile_x, tile_y))
                 
@@ -465,6 +516,8 @@ while running:
         if pygame.Rect(player_x, player_y, player_width, player_height).colliderect(cape_passgate_rect):
             if interact:
                 # Check conditions and perform interact actions
+                player_x, player_y = screen_width // 2, screen_height // 2
+
                 current_state = PASSAGES
 
 
@@ -475,15 +528,65 @@ while running:
     
     #this handles what get's displayed during the rendering of The Passages
     elif current_state == PASSAGES:
+        
+
+
         screen.fill((0, 0, 0))  # Clear the screen
         # Render game elements
           # Rendering the ground tiles
         # Rendering the ground and water tiles
+    
+        
+            
+        # Render game elements
+        for row in range(start_row, end_row):
+            for col in range(start_col, end_col):
+                tile_type = passages_tilemap[row][col]
+
+                tile_x, tile_y = col * TILE_SIZE - camera_x + 200, row * TILE_SIZE - camera_y
+
+                # Rendering ground tiles
+                if tile_type == GROUND:
+                    screen.blit(ground_tile, (tile_x, tile_y))
+                
+              
+                # Check for border tiles
+                if row == 0 or row == PASSAGES_MAP_SIZE_Y - 1 or col == 0 or col == PASSAGES_MAP_SIZE_X - 1:
+                    screen.blit(tree_border_tile, (tile_x, tile_y))
+
+
+        
+
+        
+        
+
+        # Ensure player can only walk on ground tiles
+        player_tile_row = (player_y + player_height // 2) // TILE_SIZE
+        player_tile_col = (player_x + player_width // 2) // TILE_SIZE
+
+
         
 
         # Render player
         pygame.draw.rect(screen, (255, 255, 255), (player_x - camera_x, player_y - camera_y, player_width, player_height))
         pass
+
+
+
+        #rendering the entry gate to the town area
+        screen.blit(cape_entrygate, (cape_entrygate_position[0] - camera_x, cape_entrygate_position[1] - camera_y))
+
+
+
+        #this code bit will handle collision logic between the player and the town gate allowing travelling between the two seemlessly
+        if pygame.Rect(player_x, player_y, player_width, player_height).colliderect(cape_entrygate_rect):
+            if interact:
+                # Check conditions and perform interact actions
+                player_x, player_y = screen_width // 2, screen_height // 2
+
+                current_state = GAME
+
+
 
 
     #this handles what get's displayed during the rendering of The Ruins
