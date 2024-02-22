@@ -47,7 +47,8 @@ tree_border_tile = pygame.image.load('graphics/treeborder.png')
 sea_tile = pygame.image.load('graphics/sea_tile.png')
 #importing an additional tile type for a beach
 sand_tile = pygame.image.load('graphics/sand_tile.png')
-
+#importing the base block for the ruins level
+ruins_tile = pygame.image.load('graphics/ruinsbase.png')
 
 
 
@@ -55,6 +56,7 @@ sand_tile = pygame.image.load('graphics/sand_tile.png')
 GROUND = 0
 WATER = 1
 SAND = 2
+ANCIENTRUINS = 3
 
 # Define the size of the tiles
 TILE_SIZE = 32
@@ -69,7 +71,7 @@ game_world_height = 1300
 GAME_MAP_SIZE_X = game_world_width // TILE_SIZE
 GAME_MAP_SIZE_Y = game_world_height // TILE_SIZE
 
-# Create a 2D list to represent the tilemap
+# Create a 2D list to represent the tilemap for the town
 tilemap = [[GROUND for _ in range(GAME_MAP_SIZE_X)] for _ in range(GAME_MAP_SIZE_Y)]
 
 
@@ -81,8 +83,28 @@ passages_height = 2500
 PASSAGES_MAP_SIZE_X = passages_width // TILE_SIZE
 PASSAGES_MAP_SIZE_Y = passages_height // TILE_SIZE
 
-# Create a 2D list to represent the tilemap
+# Create a 2D list to represent the tilemap for the passages
 passages_tilemap = [[GROUND for _ in range(PASSAGES_MAP_SIZE_X)] for _ in range(PASSAGES_MAP_SIZE_Y)]
+
+
+#This is going to be the third implementation of a map for the ruins area
+
+ruins_width = 2500
+ruins_height = 2500
+
+
+# Calculate the number of tiles in the map based on the ruins world size
+RUINS_MAP_SIZE_X = ruins_width // TILE_SIZE
+RUINS_MAP_SIZE_Y = ruins_height // TILE_SIZE
+
+
+# Create a 2D list to represent the tilemap for the ruins
+ruins_tilemap = [[ANCIENTRUINS for _ in range(RUINS_MAP_SIZE_X)] for _ in range(RUINS_MAP_SIZE_Y)]
+
+
+
+
+
 
 
 
@@ -137,7 +159,10 @@ cape_entrygate_position =  (screen_width // 2, 10)
 cape_entrygate_rect = cape_entrygate.get_rect(midleft=cape_entrygate_position)
 
 
-
+#this will be the entry gate into the ruins area
+ancient_ruins_gate = pygame.image.load('graphics/ruinsgate.png')
+ancient_ruins_gate_position = (screen_width // 2, 2200)
+ancient_ruins_gate_rect = ancient_ruins_gate.get_rect(midleft=ancient_ruins_gate_position)
 
 
 
@@ -286,6 +311,49 @@ while running:
     elif current_state == THERUINS:
         #this is going to be intended as the core of the gameplay
         #The Ruins variables and logic
+        keys = pygame.key.get_pressed()
+
+        if keys[K_a]:
+            player_x -= player_speed
+            player_x = max(player_x, camera_x + player_width)
+
+
+        if keys[K_d]:
+            player_x += player_speed
+            player_x = min(player_x, camera_x + screen_width - player_width-32)
+
+
+        if keys[K_w]:
+            player_y -= player_speed
+            player_y = max(player_y, camera_y + player_height)
+
+
+        if keys[K_s]:
+            player_y += player_speed
+            player_y = min(player_y, camera_y + screen_height - player_height - 32)
+
+
+        # Listen for Esc key press to return to the menu state
+        if keys[K_ESCAPE]:
+            current_state = MENU
+
+
+        if keys[K_SPACE]:
+            interact = True
+
+            # Update camera position based on player's position
+        camera_x = player_x - screen_width // 2
+        camera_y = player_y - screen_height // 2
+
+        # Clamp camera position to stay within the world boundaries
+        camera_x = max(0, min(camera_x, ruins_width - screen_width))
+        camera_y = max(0, min(camera_y, ruins_height - screen_height - 28 ))
+
+        # Render the visible portion of the tilemap based on camera position
+        start_row = camera_y // TILE_SIZE
+        end_row = min(start_row + (screen_height // TILE_SIZE) + 1, RUINS_MAP_SIZE_Y)
+        start_col = camera_x // TILE_SIZE
+        end_col = min(start_col + (screen_width // TILE_SIZE) + 1, RUINS_MAP_SIZE_X)
 
         pass
 
@@ -307,8 +375,14 @@ while running:
 
 
 
+
+
+
     # Game logic above this line # Rendering below this line
             
+
+
+
 
 
 
@@ -399,6 +473,13 @@ while running:
                 # Rendering ground tiles
                 if tile_type == GROUND:
                     screen.blit(ground_tile, (tile_x, tile_y))
+
+
+                    #temp-perm fix ona thing
+                    cape_passgate_position = (16,700)
+                    cape_passgate_rect = cape_passgate.get_rect(topleft=cape_passgate_position)
+
+
                 # Rendering sand tiles
                 elif tile_type == SAND:
                     screen.blit(sand_tile, (tile_x, tile_y))
@@ -454,7 +535,7 @@ while running:
         screen.blit(cape_port, (cape_port_position[0]- camera_x, cape_port_position[1] - camera_y))
 
 
-        #rendering the cape castsea port or third building
+        #this structure allows the player to enter the next area called the passages
         screen.blit(cape_passgate, (cape_passgate_position[0]- camera_x, cape_passgate_position[1] - camera_y))
 
 
@@ -577,6 +658,10 @@ while running:
         screen.blit(cape_entrygate, (cape_entrygate_position[0] - camera_x, cape_entrygate_position[1] - camera_y))
 
 
+        #rendering the ancient gate onto the passages area
+        screen.blit(ancient_ruins_gate, (ancient_ruins_gate_position[0] - camera_x, ancient_ruins_gate_position[1] - camera_y))
+
+
 
         #this code bit will handle collision logic between the player and the town gate allowing travelling between the two seemlessly
         if pygame.Rect(player_x, player_y, player_width, player_height).colliderect(cape_entrygate_rect):
@@ -587,11 +672,93 @@ while running:
                 current_state = GAME
 
 
+          #this code bit will handle collision logic between the player and the ruins gate allowing travelling between the two seemlessly
+        if pygame.Rect(player_x, player_y, player_width, player_height).colliderect(ancient_ruins_gate_rect):
+            if interact:
+                # Check conditions and perform interact actions
+                player_x, player_y = screen_width // 2, screen_height // 2
+
+                current_state = THERUINS
+
+
+
+
 
 
     #this handles what get's displayed during the rendering of The Ruins
     elif current_state == THERUINS:
-        screen.fill((25, 50, 65))
+
+
+
+        
+        screen.fill((0, 0, 0))  # Clear the screen
+        # Render ruins game elements
+
+       
+    
+        
+        for row in range(start_row, end_row):
+            for col in range(start_col, end_col):
+                tile_type = ruins_tilemap[row][col]
+
+                tile_x, tile_y = col * TILE_SIZE - camera_x + 200, row * TILE_SIZE - camera_y
+
+                # Rendering ground tiles
+                if tile_type == ANCIENTRUINS:
+                    screen.blit(ruins_tile, (tile_x, tile_y))
+
+                     #changing these values specifically for the ruins
+                    cape_passgate_position = (600,700)
+                    cape_passgate_rect = cape_passgate.get_rect(topleft=cape_passgate_position)
+                    
+                
+              
+                # Check for border tiles
+                if row == 0 or row == RUINS_MAP_SIZE_Y - 1 or col == 0 or col == RUINS_MAP_SIZE_X - 1:
+                    screen.blit(tree_border_tile, (tile_x, tile_y))
+
+
+        
+
+        
+        
+
+        # Ensure player can only walk on ground tiles
+        player_tile_row = (player_y + player_height // 2) // TILE_SIZE
+        player_tile_col = (player_x + player_width // 2) // TILE_SIZE
+
+
+        
+
+        # Render player
+        pygame.draw.rect(screen, (255, 255, 255), (player_x - camera_x, player_y - camera_y, player_width, player_height))
+
+        #putting this inside of the ruins and using it to enter the passages
+        screen.blit(cape_passgate, (cape_passgate_position[0]  -  camera_x, cape_passgate_position [1]  -   camera_y))
+
+
+
+
+
+
+        #here I am going to implement a collision action with the passgate to allow the player into another area of the game which will serve as a buffer between the town and the ruins
+        if pygame.Rect(player_x, player_y, player_width, player_height).colliderect(cape_passgate_rect):
+            if interact:
+                # Check conditions and perform interact actions
+                player_x, player_y = screen_width // 2, screen_height // 2
+
+                current_state = PASSAGES
+
+
+
+
+
+
+
+
+
+        pass
+
 
 
 
