@@ -203,6 +203,12 @@ while running:
 
 
     elif current_state == GAME:
+
+        if interact == True:
+            interact = False
+        
+
+        
         # Game state logic
         #player_rect.topleft = (player_x, player_y)
 
@@ -237,6 +243,14 @@ while running:
         if keys[K_SPACE]:
             interact = True
 
+        # Key released event handling
+        elif event.type == KEYUP:
+            if event.key == K_SPACE:
+                interact = False
+
+        
+        
+
             # Update camera position based on player's position
         camera_x = player_x - screen_width // 2
         camera_y = player_y - screen_height // 2
@@ -262,6 +276,8 @@ while running:
 
 
     elif current_state == PASSAGES:
+
+
         
         #passages variables and logic
         keys = pygame.key.get_pressed()
@@ -293,6 +309,12 @@ while running:
 
         if keys[K_SPACE]:
             interact = True
+
+        # Key released event handling
+        elif event.type == KEYUP:
+            if event.key == K_SPACE:
+                interact = False
+
 
             # Update camera position based on player's position
         camera_x = player_x - screen_width // 2
@@ -342,13 +364,24 @@ while running:
             player_y = min(player_y, camera_y + screen_height - player_height - 32)
 
 
+
         # Listen for Esc key press to return to the menu state
         if keys[K_ESCAPE]:
             current_state = MENU
 
 
+
         if keys[K_SPACE]:
             interact = True
+
+
+        # Key released event handling
+        elif event.type == KEYUP:
+            if event.key == K_SPACE:
+                interact = False
+
+
+
 
             # Update camera position based on player's position
         camera_x = player_x - screen_width // 2
@@ -365,6 +398,7 @@ while running:
         end_col = min(start_col + (screen_width // TILE_SIZE) + 1, RUINS_MAP_SIZE_X)
 
         pass
+
 
 
 
@@ -473,6 +507,8 @@ while running:
 
 
     elif current_state == GAME:
+        
+
         screen.fill((0, 0, 0))  # Clear the screen
         # Render game elements
           # Rendering the ground tiles
@@ -625,6 +661,7 @@ while running:
     
     #this handles what get's displayed during the rendering of The Passages
     elif current_state == PASSAGES:
+
         
 
 
@@ -718,6 +755,7 @@ while running:
 
     #this handles what get's displayed during the rendering of The Ruins
     elif current_state == THERUINS:
+        
 
 
 
