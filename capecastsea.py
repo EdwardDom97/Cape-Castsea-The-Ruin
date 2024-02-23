@@ -75,6 +75,9 @@ GAME_MAP_SIZE_Y = game_world_height // TILE_SIZE
 tilemap = [[GROUND for _ in range(GAME_MAP_SIZE_X)] for _ in range(GAME_MAP_SIZE_Y)]
 
 
+
+
+
 #I am going to copy the town area code named GAME MAP SIZE and call it PASSAGES WIDTH, HEIGHT, PASSAGES MAP SIX X and so on.
 passages_width = 1200
 passages_height = 2500
@@ -85,6 +88,10 @@ PASSAGES_MAP_SIZE_Y = passages_height // TILE_SIZE
 
 # Create a 2D list to represent the tilemap for the passages
 passages_tilemap = [[GROUND for _ in range(PASSAGES_MAP_SIZE_X)] for _ in range(PASSAGES_MAP_SIZE_Y)]
+
+
+
+
 
 
 #This is going to be the third implementation of a map for the ruins area
@@ -175,6 +182,8 @@ current_state = MENU  # Start with the menu state
 
 # Main game loop
 running = True
+
+
 while running:
 
    
@@ -378,8 +387,14 @@ while running:
 
 
 
+
+
+
+
     # Game logic above this line # Rendering below this line
             
+
+
 
 
 
@@ -495,6 +510,7 @@ while running:
             for col in range(GAME_MAP_SIZE_X - 10, GAME_MAP_SIZE_X):  # Rendering the last 10 columns as water tiles
                 tile_x, tile_y = col * TILE_SIZE - camera_x, row * TILE_SIZE - camera_y
                 screen.blit(sand_tile, (tile_x, tile_y))
+
 
         # Render the last few columns as water tiles
         for row in range(start_row, end_row):
@@ -636,6 +652,8 @@ while running:
                     screen.blit(tree_border_tile, (tile_x, tile_y))
 
 
+
+
         
 
         
@@ -682,6 +700,19 @@ while running:
 
 
 
+        #attempting a different angle of collision for the player and environment in the passages instead of detecting collision 
+        #between player and border tiles, just setting a crude minimum and maximum
+        #minumim
+        if player_x <= passages_width - 962:
+            player_x += player_speed
+            player_x = max(player_x, camera_x + player_width)
+
+        #maximum
+        if player_x >= passages_width + 96:
+            player_x -= player_speed
+            player_x = min(player_x, camera_x + screen_width - player_width-32)
+
+            pass
 
 
 
