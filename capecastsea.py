@@ -14,6 +14,7 @@
 #imports
 import pygame
 import sys
+import random
 from pygame.locals import *
 
 
@@ -33,6 +34,8 @@ fullscreen = False
 # Declare font and text stuff
 font = pygame.font.SysFont(None, 42)  # Example font and size
 menu_text_color = (150, 150, 150)  # Example text color for the menu
+WHITE_TEXT = (255, 255, 255)
+
 
 #this is my caption heading the application itself
 pygame.display.set_caption('Cape Castsea: The Ruins')
@@ -126,6 +129,13 @@ player_x, player_y = screen_width// 2, screen_height // 2
 player_speed = 2
 player_speed_multiplier = 1  # Adjust this value to change player speed created this because I felt liek the player was moving too fast
 interact = False
+player_gold = 2
+player_health = 5
+player_mana = 3
+
+
+
+
 
 
 # Constants for game states
@@ -162,7 +172,7 @@ cape_passgate_rect = cape_passgate.get_rect(topleft=cape_passgate_position)
 
 #this is a structure for the PASSAGES AREA
 cape_entrygate = pygame.image.load('graphics/towngate.png')
-cape_entrygate_position =  (screen_width // 2, 10)
+cape_entrygate_position =  (400, 10)
 cape_entrygate_rect = cape_entrygate.get_rect(midleft=cape_entrygate_position)
 
 
@@ -170,6 +180,29 @@ cape_entrygate_rect = cape_entrygate.get_rect(midleft=cape_entrygate_position)
 ancient_ruins_gate = pygame.image.load('graphics/ruinsgate.png')
 ancient_ruins_gate_position = (screen_width // 2, 2200)
 ancient_ruins_gate_rect = ancient_ruins_gate.get_rect(midleft=ancient_ruins_gate_position)
+
+
+#
+#
+#THIS IS THE FIRST GUI FOR THE GAME
+player_scoreboard = pygame.image.load('graphics/firstgui.png')
+player_scoreboard_position = (screen_width // 2, 800)
+player_scoreboard_rect = player_scoreboard.get_rect(center=player_scoreboard_position)
+#
+#
+
+#END OF GUI LOAD
+#
+#
+#
+
+
+#This will be the first enemy introduced into the game inside of the PASSAGES area
+earth_slime_image = pygame.image.load('graphics/earthslime.png')
+earth_slime_position = (random.randint(0, passages_width), random.randint(0, passages_height))
+
+earth_slime_rect = earth_slime_image.get_rect(center = earth_slime_position)
+earth_slime_speed = 1
 
 
 
@@ -445,9 +478,9 @@ while running:
         # Draw menu elements
 
         #placing this text display first because this will head the main or menu screen of the game
-        text_surface = font.render("Cape Castsea: The Ruins", True, menu_text_color)
-        text_rect = text_surface.get_rect(center=(screen_width // 4, 50))  # Center the text slightly towards the left side
-        screen.blit(text_surface, text_rect)
+        menu_caption_text = font.render("Cape Castsea: The Ruins", True, menu_text_color)
+        menu_caption_text_rect = menu_caption_text.get_rect(center=(screen_width // 4, 50))  # Center the text slightly towards the left side
+        screen.blit(menu_caption_text, menu_caption_text_rect)
 
         #1st button
         # Example: Draw a white rectangle as a placeholder button
@@ -575,6 +608,33 @@ while running:
 
         
 
+
+
+        #THIS IS INSIDE OF THE RENDERING PART OF THE GAME LOOP
+        #
+        #THIS IS THE GUI FOR THE ACTIVE GAME RENDERING
+        #change this so it moves with the player across the screen instead of being static. also make a binding, preferably tab or e
+        screen.blit(player_scoreboard, player_scoreboard_rect)
+         #placing this text to represent the player's gold, health and mana onto the GUI in game
+        #player_scoreboard_position = (screen_width // 2, 800) that is the location of the scoreboard 
+        #Displays player's gold
+        player_gold_text = font.render("G: " + str(player_gold), True, WHITE_TEXT)
+        player_gold_text_rect = player_gold_text.get_rect(topleft=(500, 800))  # Position the text at the top-left corner
+        screen.blit(player_gold_text, player_gold_text_rect)
+
+        #Displays player's health
+        player_health_text = font.render("Health: " + str(player_health), True, WHITE_TEXT)
+        player_health_text_rect = player_health_text.get_rect(topleft=(800, 800))  # Position the text below player gold
+        screen.blit(player_health_text, player_health_text_rect)
+
+        #Displays player's mana
+        player_mana_text = font.render("Mana: " + str(player_mana), True, WHITE_TEXT)
+        player_mana_text_rect = player_mana_text.get_rect(topleft=(1100, 800))  # Position the text below player health
+        screen.blit(player_mana_text, player_mana_text_rect)
+
+        #END OF THE GUI AND GUI RELATED VARIABLES
+
+
         #render the first capehouse
         screen.blit(cape_house, (cape_house_position[0] - camera_x, cape_house_position[1] - camera_y))
 
@@ -701,6 +761,34 @@ while running:
         player_tile_col = (player_x + player_width // 2) // TILE_SIZE
 
 
+
+        
+        #THIS IS INSIDE OF THE RENDERING PART OF THE PASSAGES LOOP
+        #
+        #THIS IS THE GUI FOR THE ACTIVE PASSAGES RENDERING
+        #change this so it moves with the player across the screen instead of being static. also make a binding, preferably tab or e
+        screen.blit(player_scoreboard, player_scoreboard_rect)
+         #placing this text to represent the player's gold, health and mana onto the GUI in game
+        #player_scoreboard_position = (screen_width // 2, 800) that is the location of the scoreboard 
+        #Displays player's gold
+        player_gold_text = font.render("G: " + str(player_gold), True, WHITE_TEXT)
+        player_gold_text_rect = player_gold_text.get_rect(topleft=(500, 800))  # Position the text at the top-left corner
+        screen.blit(player_gold_text, player_gold_text_rect)
+
+        #Displays player's health
+        player_health_text = font.render("Health: " + str(player_health), True, WHITE_TEXT)
+        player_health_text_rect = player_health_text.get_rect(topleft=(800, 800))  # Position the text below player gold
+        screen.blit(player_health_text, player_health_text_rect)
+
+        #Displays player's mana
+        player_mana_text = font.render("Mana: " + str(player_mana), True, WHITE_TEXT)
+        player_mana_text_rect = player_mana_text.get_rect(topleft=(1100, 800))  # Position the text below player health
+        screen.blit(player_mana_text, player_mana_text_rect)
+
+        #END OF THE GUI AND GUI RELATED VARIABLES
+
+
+
         
 
         # Render player
@@ -715,6 +803,32 @@ while running:
 
         #rendering the ancient gate onto the passages area
         screen.blit(ancient_ruins_gate, (ancient_ruins_gate_position[0] - camera_x, ancient_ruins_gate_position[1] - camera_y))
+
+
+        #here I want to render my earthslime image into the passages area and handle a simple detection where if player_rect_x <= earth_slime_image_rect - 300: earthslime_rect_x, earthslime, so on...
+        screen.blit(earth_slime_image, (earth_slime_position[0] - camera_x, earth_slime_position[1] - camera_y))
+        #this is where I want to introduce the collision detection and follow logic similar to my other game slime ranger
+        # distance = abs(player.players_rect.centerx - earth_slime_image_rect.centerx)
+        #    if distance >= 50:
+        #       earth_slime_position -= player_rect_position
+        # Define distance threshold for enemy to start following player
+        follow_threshold = 300
+
+        # Calculate distance between player and enemy
+        distance_to_player = ((player_x - earth_slime_position[0])**2 + (player_y - earth_slime_position[1])**2)**0.5
+
+        # Check if player is within follow threshold distance
+        if distance_to_player < follow_threshold:
+            # Update enemy position based on player's position
+            if player_x < earth_slime_position[0]:
+                earth_slime_position = (earth_slime_position[0] - earth_slime_speed, earth_slime_position[1])
+            elif player_x > earth_slime_position[0]:
+                earth_slime_position = (earth_slime_position[0] + earth_slime_speed, earth_slime_position[1])
+
+            if player_y < earth_slime_position[1]:
+                earth_slime_position = (earth_slime_position[0], earth_slime_position[1] - earth_slime_speed)
+            elif player_y > earth_slime_position[1]:
+                earth_slime_position = (earth_slime_position[0], earth_slime_position[1] + earth_slime_speed)
 
 
 
@@ -744,6 +858,7 @@ while running:
             player_x += player_speed
             player_x = max(player_x, camera_x + player_width)
 
+
         #maximum
         if player_x >= passages_width + 96:
             player_x -= player_speed
@@ -758,19 +873,16 @@ while running:
         
 
 
-
-        
         screen.fill((0, 0, 0))  # Clear the screen
         # Render ruins game elements
 
        
-    
         
         for row in range(start_row, end_row):
             for col in range(start_col, end_col):
                 tile_type = ruins_tilemap[row][col]
 
-                tile_x, tile_y = col * TILE_SIZE - camera_x + 200, row * TILE_SIZE - camera_y
+                tile_x, tile_y = col * TILE_SIZE - camera_x , row * TILE_SIZE - camera_y
 
                 # Rendering ground tiles
                 if tile_type == ANCIENTRUINS:
@@ -790,7 +902,6 @@ while running:
         
 
         
-        
 
         # Ensure player can only walk on ground tiles
         player_tile_row = (player_y + player_height // 2) // TILE_SIZE
@@ -809,7 +920,6 @@ while running:
 
 
 
-
         #here I am going to implement a collision action with the passgate to allow the player into another area of the game which will serve as a buffer between the town and the ruins
         if pygame.Rect(player_x, player_y, player_width, player_height).colliderect(cape_passgate_rect):
             if interact:
@@ -823,12 +933,7 @@ while running:
 
 
 
-
-
-
         pass
-
-
 
 
 
