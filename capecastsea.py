@@ -33,6 +33,7 @@ fullscreen = False
 
 # Declare font and text stuff
 font = pygame.font.SysFont(None, 42)  # Example font and size
+GUI_font = pygame.font.SysFont(None, 46)
 menu_text_color = (150, 150, 150)  # Example text color for the menu
 WHITE_TEXT = (255, 255, 255)
 
@@ -618,17 +619,17 @@ while running:
          #placing this text to represent the player's gold, health and mana onto the GUI in game
         #player_scoreboard_position = (screen_width // 2, 800) that is the location of the scoreboard 
         #Displays player's gold
-        player_gold_text = font.render("G: " + str(player_gold), True, WHITE_TEXT)
+        player_gold_text = GUI_font.render("G: " + str(player_gold), True, WHITE_TEXT)
         player_gold_text_rect = player_gold_text.get_rect(topleft=(500, 800))  # Position the text at the top-left corner
         screen.blit(player_gold_text, player_gold_text_rect)
 
         #Displays player's health
-        player_health_text = font.render("Health: " + str(player_health), True, WHITE_TEXT)
+        player_health_text = GUI_font.render("Health: " + str(player_health), True, WHITE_TEXT)
         player_health_text_rect = player_health_text.get_rect(topleft=(800, 800))  # Position the text below player gold
         screen.blit(player_health_text, player_health_text_rect)
 
         #Displays player's mana
-        player_mana_text = font.render("Mana: " + str(player_mana), True, WHITE_TEXT)
+        player_mana_text = GUI_font.render("Mana: " + str(player_mana), True, WHITE_TEXT)
         player_mana_text_rect = player_mana_text.get_rect(topleft=(1100, 800))  # Position the text below player health
         screen.blit(player_mana_text, player_mana_text_rect)
 
@@ -771,17 +772,17 @@ while running:
          #placing this text to represent the player's gold, health and mana onto the GUI in game
         #player_scoreboard_position = (screen_width // 2, 800) that is the location of the scoreboard 
         #Displays player's gold
-        player_gold_text = font.render("G: " + str(player_gold), True, WHITE_TEXT)
+        player_gold_text = GUI_font.render("G: " + str(player_gold), True, WHITE_TEXT)
         player_gold_text_rect = player_gold_text.get_rect(topleft=(500, 800))  # Position the text at the top-left corner
         screen.blit(player_gold_text, player_gold_text_rect)
 
         #Displays player's health
-        player_health_text = font.render("Health: " + str(player_health), True, WHITE_TEXT)
+        player_health_text = GUI_font.render("Health: " + str(player_health), True, WHITE_TEXT)
         player_health_text_rect = player_health_text.get_rect(topleft=(800, 800))  # Position the text below player gold
         screen.blit(player_health_text, player_health_text_rect)
 
         #Displays player's mana
-        player_mana_text = font.render("Mana: " + str(player_mana), True, WHITE_TEXT)
+        player_mana_text = GUI_font.render("Mana: " + str(player_mana), True, WHITE_TEXT)
         player_mana_text_rect = player_mana_text.get_rect(topleft=(1100, 800))  # Position the text below player health
         screen.blit(player_mana_text, player_mana_text_rect)
 
@@ -832,6 +833,17 @@ while running:
 
 
 
+        # Update earth slime rect after changing its position
+        earth_slime_rect = earth_slime_image.get_rect(center=earth_slime_position)
+
+        # Crude initial collision test with player object and enemy object
+        if pygame.Rect(player_x, player_y, player_width, player_height).colliderect(earth_slime_rect):
+            player_health -= 1
+            earth_slime_position = (random.randint(0, passages_width), random.randint(0, passages_height))
+            
+
+
+
         #this code bit will handle collision logic between the player and the town gate allowing travelling between the two seemlessly
         if pygame.Rect(player_x, player_y, player_width, player_height).colliderect(cape_entrygate_rect):
             if interact:
@@ -841,6 +853,9 @@ while running:
                 current_state = GAME
 
 
+
+
+
           #this code bit will handle collision logic between the player and the ruins gate allowing travelling between the two seemlessly
         if pygame.Rect(player_x, player_y, player_width, player_height).colliderect(ancient_ruins_gate_rect):
             if interact:
@@ -848,6 +863,7 @@ while running:
                 player_x, player_y = screen_width // 2, screen_height // 2
 
                 current_state = THERUINS
+
 
 
 
